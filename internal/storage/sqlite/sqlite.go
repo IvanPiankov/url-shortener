@@ -1,14 +1,13 @@
 package sqlite
 
 import (
-	"crypto/internal/alias"
 	"database/sql"
 	"errors"
 	"fmt"
 	"url-shortener/internal/storage"
 
 	"github.com/mattn/go-sqlite3"
-	_ "github.com/mattn/go-sqlite3" // init sqllit3 driver
+	_ "github.com/mattn/go-sqlite3" // init sqlite3 driver
 )
 
 type Storage struct {
@@ -69,15 +68,14 @@ func (s *Storage) SaveURL(urlToSave string, alias string) (int64, error) {
 	}
 
 	return id, nil
-	
-}
 
+}
 
 func (s *Storage) GetUrl(alias string) (string, error) {
 	const op = "storage.sqlite.GetUrl"
 
 	stmt, err := s.db.Prepare("SELECT url FROM url WHERE alias = ?")
-	
+
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
@@ -86,13 +84,13 @@ func (s *Storage) GetUrl(alias string) (string, error) {
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", storage.ErrURLNotFound
 	}
-	
+
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	return resultUrl, nil
-	
+
 }
 
 func (s *Storage) DeleteUrl(alias string) error {
@@ -105,7 +103,7 @@ func (s *Storage) DeleteUrl(alias string) error {
 	}
 
 	_, err = stmt.Exec(alias)
-	
+
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}

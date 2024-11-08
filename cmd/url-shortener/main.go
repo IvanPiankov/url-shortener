@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 	"url-shortener/internal/config"
+	"url-shortener/internal/http-server/handlers/url/delete"
+	"url-shortener/internal/http-server/handlers/url/redirect"
 	"url-shortener/internal/http-server/handlers/url/save"
 	"url-shortener/internal/storage/sqlite"
 
@@ -14,7 +16,7 @@ import (
 
 const (
 	envLocal = "local"
-	envProd = "prod"
+	envProd  = "prod"
 )
 
 func main() {
@@ -42,13 +44,15 @@ func main() {
 	router.Use(middleware.URLFormat)
 
 	router.Post("/url", save.New(logger, storage))
+	router.Get("/url/{alias}", redirect.New(logger, storage))
+	router.Delete("/url/{alias}", delete.New(logger, storage))
 
 	srv := &http.Server{
-		Addr: cfg.Address,
-		Handler: router,
-		ReadTimeout: cfg.HTTPServer.Timeout,
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
-		IdleTimeout: cfg.HTTPServer.IdleTimeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
 	}
 
 	logger.Info("Started URL-shortener")
