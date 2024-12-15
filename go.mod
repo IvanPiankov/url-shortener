@@ -1,6 +1,6 @@
 module url-shortener
 
-go 1.21.5
+go 1.23.4
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
@@ -16,6 +16,7 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/unrolled/render v1.6.1 // indirect
 	golang.org/x/crypto v0.7.0 // indirect

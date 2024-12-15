@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
 	"net/http"
 	"os"
@@ -8,10 +10,7 @@ import (
 	"url-shortener/internal/http-server/handlers/url/delete"
 	"url-shortener/internal/http-server/handlers/url/redirect"
 	"url-shortener/internal/http-server/handlers/url/save"
-	"url-shortener/internal/storage/sqlite"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"url-shortener/internal/storage/postgres"
 )
 
 const (
@@ -27,9 +26,10 @@ func main() {
 
 	logger.Info("Starting URL-shortener")
 
-	storage, err := sqlite.New(cfg.StoragePath)
+	storage, err := postgres.New(cfg.StoragePath)
 	if err != nil {
-		logger.Error("Failed to init storage")
+		logger.Error("Failed to init database")
+		logger.Error(err.Error())
 		os.Exit(1)
 	}
 

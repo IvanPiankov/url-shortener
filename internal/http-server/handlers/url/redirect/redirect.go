@@ -43,6 +43,7 @@ func New(log *slog.Logger, urlGetter UrlGetter) http.HandlerFunc {
 		}
 
 		if err != nil {
+			log.Error(err.Error())
 			log.Info("Failed to get url")
 
 			render.JSON(w, r, resp.Error("Not Found"))

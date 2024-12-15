@@ -74,6 +74,7 @@ func New(log *slog.Logger, urlServer URLSaver) http.HandlerFunc {
 		}
 		if err != nil {
 			log.Error("Unknown error")
+			log.Error(err.Error())
 
 			render.JSON(w, r, resp.Error("Unknown error"))
 
