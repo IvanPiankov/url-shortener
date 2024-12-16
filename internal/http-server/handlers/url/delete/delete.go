@@ -1,6 +1,7 @@
 package delete
 
 import (
+	"context"
 	"errors"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -12,7 +13,7 @@ import (
 )
 
 type UrlDeleter interface {
-	DeleteUrl(alias string) error
+	DeleteUrl(ctx context.Context, alias string) error
 }
 
 func New(log *slog.Logger, UrlDeleter UrlDeleter) http.HandlerFunc {
@@ -32,7 +33,7 @@ func New(log *slog.Logger, UrlDeleter UrlDeleter) http.HandlerFunc {
 			return
 		}
 
-		err := UrlDeleter.DeleteUrl(alias)
+		err := UrlDeleter.DeleteUrl(r.Context(), alias)
 
 		if errors.Is(err, storage.ErrURLNotFound) {
 			log.Info("Url by alias not found")

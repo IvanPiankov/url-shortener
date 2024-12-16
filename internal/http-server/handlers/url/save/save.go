@@ -1,6 +1,7 @@
 package save
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -28,7 +29,7 @@ const (
 )
 
 type URLSaver interface {
-	SaveURL(urlToSave string, alias string) (int64, error)
+	SaveURL(ctx context.Context, urlToSave string, alias string) (int64, error)
 }
 
 func New(log *slog.Logger, urlServer URLSaver) http.HandlerFunc {
@@ -63,7 +64,7 @@ func New(log *slog.Logger, urlServer URLSaver) http.HandlerFunc {
 			alias = random.NewRandomString(aliasLength)
 		}
 
-		id, err := urlServer.SaveURL(req.URL, alias)
+		id, err := urlServer.SaveURL(r.Context(), req.URL, alias)
 
 		if errors.Is(err, storage.ErrURLAlreadyExists) {
 			log.Error("Url already exists")

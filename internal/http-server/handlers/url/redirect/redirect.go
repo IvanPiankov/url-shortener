@@ -1,6 +1,7 @@
 package redirect
 
 import (
+	"context"
 	"errors"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -12,7 +13,7 @@ import (
 )
 
 type UrlGetter interface {
-	GetUrl(alias string) (string, error)
+	GetUrl(ctx context.Context, alias string) (string, error)
 }
 
 func New(log *slog.Logger, urlGetter UrlGetter) http.HandlerFunc {
@@ -33,7 +34,7 @@ func New(log *slog.Logger, urlGetter UrlGetter) http.HandlerFunc {
 
 			return
 		}
-		resUrl, err := urlGetter.GetUrl(alias)
+		resUrl, err := urlGetter.GetUrl(r.Context(), alias)
 
 		if errors.Is(err, storage.ErrURLNotFound) {
 			log.Info("Url with alias not found")
