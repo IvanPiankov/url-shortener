@@ -32,6 +32,14 @@ type URLSaver interface {
 	SaveURL(ctx context.Context, urlToSave string, alias string) (int64, error)
 }
 
+// New urlSaver godoc
+//
+//	@Summary	Convert long url to short templ
+//	@Summary	Convert long url to short template
+//	@Tags		URL
+//	@Accept		json
+//	@Produce	json
+//	@Router		/url [post]
 func New(log *slog.Logger, urlServer URLSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.url.save.New"

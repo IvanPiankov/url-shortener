@@ -1,6 +1,7 @@
 package sqlite
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -26,16 +27,16 @@ func New(storagePath string) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
-func (s *Storage) SaveURL(urlToSave string, alias string) (int64, error) {
+func (s *Storage) SaveURL(ctx context.Context, urlToSave string, alias string) (int64, error) {
 	const op = "database.sqlite.SaveUrl"
 
-	stmt, err := s.db.Prepare("INSERT INTO url(url, alias) VALUES (?, ?)")
+	stmt, err := s.db.PrepareContext(ctx, "INSERT INTO url(url, alias) VALUES (?, ?)")
 
 	if err != nil {
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
-	res, err := stmt.Exec(urlToSave, alias)
+	res, err := stmt.ExecContext(ctx, urlToSave, alias)
 	if err != nil {
 		// TODO: refactor this
 		if sqliteErr, ok := err.(sqlite3.Error); ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
@@ -53,16 +54,16 @@ func (s *Storage) SaveURL(urlToSave string, alias string) (int64, error) {
 
 }
 
-func (s *Storage) GetUrl(alias string) (string, error) {
+func (s *Storage) GetUrl(ctx context.Context, alias string) (string, error) {
 	const op = "database.sqlite.GetUrl"
 
-	stmt, err := s.db.Prepare("SELECT url FROM url WHERE alias = ?")
+	stmt, err := s.db.PrepareContext(ctx, "SELECT url FROM url WHERE alias = ?")
 
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 	var resultUrl string
-	err = stmt.QueryRow(alias).Scan(&resultUrl)
+	err = stmt.QueryRowContext(ctx, alias).Scan(&resultUrl)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", storage.ErrURLNotFound
 	}
@@ -75,16 +76,16 @@ func (s *Storage) GetUrl(alias string) (string, error) {
 
 }
 
-func (s *Storage) DeleteUrl(alias string) error {
+func (s *Storage) DeleteUrl(ctx context.Context, alias string) error {
 	const op = "database.sqlite.DeleteUrl"
 
-	stmt, err := s.db.Prepare("DELETE FROM url WHERE alias = ?")
+	stmt, err := s.db.PrepareContext(ctx, "DELETE FROM url WHERE alias = ?")
 
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = stmt.Exec(alias)
+	_, err = stmt.ExecContext(ctx, alias)
 
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
